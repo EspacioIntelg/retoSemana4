@@ -1,0 +1,117 @@
+public class App {
+    public static void main(String[] args) throws Exception {
+        
+        ColaDePrioridad cola = new ColaDePrioridad();
+
+        // Insertando procesos en la cola de prioridad
+        cola.insertar(new Nodo("Proceso A", 3));
+        cola.insertar(new Nodo("Proceso B", 1));
+        cola.insertar(new Nodo("Proceso C", 4));
+        cola.insertar(new Nodo("Proceso D", 2));
+
+        System.out.println("Procesos en la cola de prioridad:");
+        cola.imprimirCola();
+
+        // Eliminando procesos de la cola de prioridad
+        System.out.println("\nEliminando proceso con mayor prioridad: " + cola.eliminar());
+        System.out.println("Procesos restantes en la cola de prioridad:");
+        cola.imprimirCola();
+
+        System.out.println("\nEliminando proceso con mayor prioridad: " + cola.eliminar());
+        System.out.println("Procesos restantes en la cola de prioridad:");
+        cola.imprimirCola();
+    }
+}
+
+import java.util.ArrayList;
+
+public class ColaDePrioridad {
+    private ArrayList<Nodo> heap;
+
+    public ColaDePrioridad() {
+        heap = new ArrayList<>();
+    }
+
+
+    public void insertar(Nodo proceso) {
+        heap.add(proceso); 
+        reorganizarMonticuloAscendente(heap.size() - 1); 
+    }
+
+    
+    public Nodo eliminar() {
+        if (heap.size() == 0) {
+            System.out.println("La cola de prioridad está vacía");
+            return null;
+        }
+        Nodo procesoMaxPrioridad = heap.get(0); 
+        heap.set(0, heap.remove(heap.size() - 1)); 
+        reorganizarMonticuloDescendente(0); 
+        return procesoMaxPrioridad;
+    }
+
+    
+    private void reorganizarMonticuloAscendente(int index) {
+        int parentIndex = (index - 1) / 2;
+        if (index > 0 && heap.get(index).getPrioridad() < heap.get(parentIndex).getPrioridad()) {
+            intercambiar(index, parentIndex);
+            reorganizarMonticuloAscendente(parentIndex); 
+        }
+    }
+
+    
+    private void reorganizarMonticuloDescendente(int index) {
+        int leftChildIndex = 2 * index + 1;
+        int rightChildIndex = 2 * index + 2;
+        int smallest = index;
+
+        if (leftChildIndex < heap.size() && heap.get(leftChildIndex).getPrioridad() < heap.get(smallest).getPrioridad()) {
+            smallest = leftChildIndex;
+        }
+
+        if (rightChildIndex < heap.size() && heap.get(rightChildIndex).getPrioridad() < heap.get(smallest).getPrioridad()) {
+            smallest = rightChildIndex;
+        }
+
+        if (smallest != index) {
+            intercambiar(index, smallest);
+            reorganizarMonticuloDescendente(smallest); 
+        }
+    }
+
+    
+    private void intercambiar(int i, int j) {
+        Nodo temp = heap.get(i);
+        heap.set(i, heap.get(j));
+        heap.set(j, temp);
+    }
+
+   
+    public void imprimirCola() {
+        for (Nodo proceso : heap) {
+            System.out.println(proceso);
+        }
+    }
+}
+public class Nodo {
+    private String nombreProceso;
+    private int prioridad;
+
+    public Nodo(String nombreProceso, int prioridad) {
+        this.nombreProceso = nombreProceso;
+        this.prioridad = prioridad;
+    }
+
+    public String getNombreProceso() {
+        return nombreProceso;
+    }
+
+    public int getPrioridad() {
+        return prioridad;
+    }
+
+    @Override
+    public String toString() {
+        return "Proceso: " + nombreProceso + ", Prioridad: " + prioridad;
+    }
+}
